@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: 10 10 10;        /* almost black */
+    --bg-secondary: 26 26 26;      /* dark grey */
+    --bg-card: 26 26 26;           /* dark grey */
+    --text-primary: 229 229 229;   /* light grey */
+    --text-secondary: 163 163 163; /* medium grey */
+    --border-color: 45 45 45;      /* stone grey */
+    --accent: 217 119 6;           /* amber */
+  }
+  html {
+    @apply bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))];
+  }
+  body {
+    @apply bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))];
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  * {
+    @apply transition-colors duration-150;
+  }
+}
