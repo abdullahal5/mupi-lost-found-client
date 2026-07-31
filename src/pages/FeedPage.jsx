@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { FaPlus, FaTimes } from "react-icons/fa";
+import {
+  FaPlus,
+  FaTimes,
+  FaImage,
+  FaMapPin,
+  FaFileAlt,
+  FaTag,
+  FaPaperPlane,
+} from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import PostCard from "../components/PostCard";
 import { api } from "../api";
@@ -15,6 +23,7 @@ function FeedPage({ user, token, onLogout }) {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newLocation, setNewLocation] = useState("");
+  const [newImage, setNewImage] = useState(""); // New field for image URL
 
   const loadPosts = async () => {
     setLoading(true);
@@ -56,6 +65,7 @@ function FeedPage({ user, token, onLogout }) {
     setNewTitle("");
     setNewDescription("");
     setNewLocation("");
+    setNewImage("");
     setNewType("Lost");
   };
 
@@ -75,6 +85,7 @@ function FeedPage({ user, token, onLogout }) {
         title: newTitle,
         description: newDescription,
         location: newLocation || "Not specified",
+        image: newImage.trim() || null, // Send image URL to backend
       });
       setPosts([created, ...posts]);
       closeModal();
@@ -135,28 +146,30 @@ function FeedPage({ user, token, onLogout }) {
       {/* New Post Modal */}
       {showModal && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-20"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4 z-50"
           onClick={closeModal}
         >
           <div
-            className="bg-[rgb(var(--bg-card))] border border-[rgb(var(--border-color))] rounded-xl p-5 w-full max-w-md shadow-md max-h-[90vh] overflow-y-auto"
+            className="bg-[rgb(var(--bg-card))] border border-[rgb(var(--border-color))] rounded-xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-[rgb(var(--text-primary))]">
+              <h3 className="text-lg font-bold text-[rgb(var(--text-primary))] flex items-center gap-2">
+                <FaFileAlt className="text-amber-500" />
                 Create New Post
               </h3>
               <button
                 onClick={closeModal}
-                className="text-[rgb(var(--text-secondary))] hover:text-amber-400"
+                className="text-[rgb(var(--text-secondary))] hover:text-amber-400 transition-colors"
               >
-                <FaTimes className="w-4 h-4" />
+                <FaTimes className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleAddPost} className="space-y-3">
+            <form onSubmit={handleAddPost} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1">
+                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1 flex items-center gap-2">
+                  <FaTag className="text-amber-500" />
                   Type
                 </label>
                 <select
@@ -170,7 +183,8 @@ function FeedPage({ user, token, onLogout }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1">
+                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1 flex items-center gap-2">
+                  <FaFileAlt className="text-amber-500" />
                   Title
                 </label>
                 <input
@@ -179,11 +193,13 @@ function FeedPage({ user, token, onLogout }) {
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full border border-[rgb(var(--border-color))] rounded-lg px-3 py-2 text-sm bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-amber-500"
                   placeholder="e.g. Lost phone near canteen"
+                  required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1">
+                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1 flex items-center gap-2">
+                  <FaFileAlt className="text-amber-500" />
                   Description
                 </label>
                 <textarea
@@ -191,12 +207,14 @@ function FeedPage({ user, token, onLogout }) {
                   onChange={(e) => setNewDescription(e.target.value)}
                   className="w-full border border-[rgb(var(--border-color))] rounded-lg px-3 py-2 text-sm bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-amber-500"
                   rows="3"
-                  placeholder="Add some details..."
+                  placeholder="Add details about the item..."
+                  required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1">
+                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1 flex items-center gap-2">
+                  <FaMapPin className="text-amber-500" />
                   Location
                 </label>
                 <input
@@ -208,20 +226,49 @@ function FeedPage({ user, token, onLogout }) {
                 />
               </div>
 
-              <div className="flex gap-2 pt-1">
+              <div>
+                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] mb-1 flex items-center gap-2">
+                  <FaImage className="text-amber-500" />
+                  Image URL (optional)
+                </label>
+                <input
+                  type="url"
+                  value={newImage}
+                  onChange={(e) => setNewImage(e.target.value)}
+                  className="w-full border border-[rgb(var(--border-color))] rounded-lg px-3 py-2 text-sm bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-secondary))] focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  placeholder="https://example.com/photo.jpg"
+                />
+                {newImage && (
+                  <div className="mt-2 rounded-lg overflow-hidden border border-[rgb(var(--border-color))]">
+                    <img
+                      src={newImage}
+                      alt="Preview"
+                      className="w-full h-32 object-cover"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.parentElement.innerHTML =
+                          '<p class="text-xs text-red-400 p-2">Invalid image URL</p>';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="w-1/2 border border-[rgb(var(--border-color))] text-[rgb(var(--text-primary))] py-2 rounded-lg font-medium text-sm hover:bg-[rgb(var(--bg-secondary))]"
+                  className="flex-1 bg-[rgb(var(--bg-primary))] border border-[rgb(var(--border-color))] text-[rgb(var(--text-primary))] py-2.5 rounded-lg font-medium hover:bg-[rgb(var(--border-color))] transition-colors text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-1/2 bg-amber-600 text-white py-2 rounded-lg font-medium hover:bg-amber-700 text-sm disabled:opacity-60"
+                  className="flex-1 flex items-center justify-center gap-2 bg-amber-600 text-white py-2.5 rounded-lg font-medium hover:bg-amber-700 transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {submitting ? "Posting..." : "Submit Post"}
+                  <FaPaperPlane className="w-4 h-4" />
+                  {submitting ? "Posting..." : "Post Item"}
                 </button>
               </div>
             </form>
